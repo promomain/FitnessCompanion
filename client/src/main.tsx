@@ -13,13 +13,8 @@ linkIcons.rel = "stylesheet";
 linkIcons.href = "https://fonts.googleapis.com/icon?family=Material+Icons";
 document.head.appendChild(linkIcons);
 
-// Add meta tags
-const metaDescription = document.createElement("meta");
-metaDescription.name = "description";
-metaDescription.content = "Aplicación de rutina de ejercicios diarios con 5 videos guiados para mantenerte en forma.";
-document.head.appendChild(metaDescription);
+// No need to add meta tags here as they are now in index.html
 
-// Page title
-document.title = "Rutina de Ejercicios";
+// Page title is already in index.html
 
 createRoot(document.getElementById("root")!).render(<App />);

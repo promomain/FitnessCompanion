@@ -1,5 +1,5 @@
 // Modelo de datos simulado para la versión de GitHub Pages (sin backend)
-import { exercises } from '../client/src/lib/exercise-data';
+import { exercises } from './exercise-data';
 
 // Para almacenar datos localmente
 const STORAGE_KEY = 'exercise-app-data';

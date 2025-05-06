@@ -1,6 +1,11 @@
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Obtener el directorio actual para ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Colores para la salida en consola
 const colors = {
@@ -50,6 +55,12 @@ try {
     path.join(clientLibDir, 'queryClient.ts')
   );
   
+  // Copiar mockStorage.ts al mismo directorio
+  fs.copyFileSync(
+    path.join(__dirname, 'mockStorage.ts'),
+    path.join(clientLibDir, 'mockStorage.ts')
+  );
+  
   // Ejecutar comando de compilación
   console.log(`${colors.yellow}🔨 Construyendo aplicación estática...${colors.reset}`);
   execSync('npx vite build --config vite.github.config.ts', { stdio: 'inherit' });
@@ -64,6 +75,11 @@ try {
       path.join(clientLibDir, 'backup/queryClient.original.ts'),
       path.join(clientLibDir, 'queryClient.ts')
     );
+  }
+  
+  // Eliminar mockStorage.ts si existe
+  if (fs.existsSync(path.join(clientLibDir, 'mockStorage.ts'))) {
+    fs.unlinkSync(path.join(clientLibDir, 'mockStorage.ts'));
   }
   
   // Eliminar archivo de configuración temporal
