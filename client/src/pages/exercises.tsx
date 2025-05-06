@@ -202,8 +202,10 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     }
   };
 
-  // Get current exercise data
-  const currentExercise = exercises[state.currentExercise];
+  // Get current exercise data with fallback to prevent errors
+  const currentExercise = state.currentExercise >= 0 && state.currentExercise < exercises.length
+    ? exercises[state.currentExercise]
+    : exercises[0]; // Fallback to first exercise if index is out of bounds
 
   // Toggle fullscreen mode for video
   const toggleVideoFullscreen = () => {
