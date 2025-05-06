@@ -270,7 +270,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
               loop
               muted
               playsInline
-              src={currentExercise.videoPath}
+              src={currentExercise?.videoPath}
             >
               Tu navegador no soporta videos HTML5.
             </video>
@@ -341,8 +341,8 @@ export default function Exercises({ state, setState }: ExercisesProps) {
             loop
             muted
             playsInline
-            poster={currentExercise.posterUrl || ''}
-            src={currentExercise.videoPath}
+            poster={currentExercise?.posterUrl || ''}
+            src={currentExercise?.videoPath}
             onClick={toggleVideoFullscreen}
           >
             Tu navegador no soporta videos HTML5.
@@ -350,7 +350,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           
           {/* Exercise number indicator */}
           <div className="absolute top-2 right-2 bg-[#2196F3] text-white rounded-full px-3 py-1 text-sm font-bold shadow-md">
-            {currentExercise.id}/5
+            {currentExercise?.id || (state.currentExercise + 1)}/5
           </div>
           
           {/* Fullscreen button */}
@@ -366,23 +366,23 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           {/* Exercise title overlay */}
           <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">{currentExercise.title}</h2>
+              <h2 className="text-xl font-bold">{currentExercise?.title || `Ejercicio ${state.currentExercise + 1}`}</h2>
               
-              {currentExercise.duration && (
+              {currentExercise?.duration && (
                 <div className="flex items-center text-sm">
                   <span className="material-icons text-white mr-1 text-sm">timer</span>
                   <span>{currentExercise.duration}</span>
                 </div>
               )}
               
-              {currentExercise.repetitions && !currentExercise.hasPairCounter && (
+              {currentExercise?.repetitions && !currentExercise?.hasPairCounter && (
                 <div className="flex items-center text-sm">
                   <span className="material-icons text-white mr-1 text-sm">repeat</span>
                   <span>{currentExercise.repetitions}x</span>
                 </div>
               )}
               
-              {currentExercise.hasPairCounter && (
+              {currentExercise?.hasPairCounter && (
                 <div className="flex items-center text-sm">
                   <span className="material-icons text-white mr-1 text-sm">repeat</span>
                   <span>7x por pierna</span>
@@ -392,7 +392,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           </div>
           
           {/* Timer overlay for exercise 1 */}
-          {currentExercise.hasTimer && (
+          {currentExercise?.hasTimer && (
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <TimerCircle 
                 seconds={state.remainingTime}
@@ -404,7 +404,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           )}
           
           {/* Start timer button overlay for exercise 1 */}
-          {currentExercise.hasTimer && !state.timerRunning && (
+          {currentExercise?.hasTimer && !state.timerRunning && (
             <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
               <Button
                 className="min-h-[48px] bg-[#2196F3] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center"
