@@ -143,9 +143,10 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     }
   }, [counters, state.currentExercise, state.remainingTime]);
   
-  // Update next button state when currentExercise or exercisesCompleted changes
+  // Update next button state - always enabled to allow skipping exercises
   useEffect(() => {
-    setNextButtonEnabled(state.exercisesCompleted[state.currentExercise]);
+    // Next button is always enabled to allow skipping 
+    setNextButtonEnabled(true);
     setCompleteButtonEnabled(state.exercisesCompleted[state.currentExercise]);
   }, [state.currentExercise, state.exercisesCompleted]);
 
@@ -198,6 +199,13 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     }
   }, [state.currentExercise, isVideoFullscreen, fullscreenHandle]);
   
+  // Auto-start videos when they change
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(err => console.log('Video autoplay failed:', err));
+    }
+  }, [state.currentExercise]);
+  
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-24" {...swipeHandlers}>
       {/* Header */}
@@ -217,8 +225,10 @@ export default function Exercises({ state, setState }: ExercisesProps) {
             <video 
               ref={videoRef}
               className="video-fullscreen"
-              controls
               autoPlay
+              loop
+              muted
+              playsInline
               src={currentExercise.videoPath}
             >
               Tu navegador no soporta videos HTML5.
@@ -270,10 +280,10 @@ export default function Exercises({ state, setState }: ExercisesProps) {
         ) : null}
       </FullScreen>
 
-      {/* Exercise Container - Only shown when not in fullscreen */}
-      <div className={`container mx-auto px-4 py-4 ${isVideoFullscreen ? 'hidden' : ''}`}>
+      {/* Exercise Container - Compact vertical layout for iPhone */}
+      <div className={`container mx-auto px-4 py-2 ${isVideoFullscreen ? 'hidden' : ''}`}>
         {/* Progress Bar */}
-        <div className="mb-4">
+        <div className="mb-2">
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div 
               id="progress-bar" 
@@ -290,118 +300,123 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           </div>
         </div>
 
-        {/* Current Exercise Card */}
-        <Card className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-          <div className="relative">
-            <video 
-              ref={videoRef}
-              className="w-full max-h-[40vh] object-cover bg-black"
-              controls
-              poster={currentExercise.posterUrl}
-              src={currentExercise.videoPath}
-              onClick={toggleVideoFullscreen}
-            >
-              Tu navegador no soporta videos HTML5.
-            </video>
-            <div className="absolute top-2 right-2 bg-[#2196F3] text-white rounded-full px-3 py-1 text-sm font-bold shadow-md">
-              {currentExercise.id}/5
-            </div>
-            
-            {/* Fullscreen button */}
-            <Button 
-              variant="ghost"
-              size="icon"
-              className="absolute bottom-2 right-2 bg-black/50 text-white hover:bg-black/70"
-              onClick={toggleVideoFullscreen}
-            >
-              <span className="material-icons">fullscreen</span>
-            </Button>
+        {/* Current Exercise - Prioritize video with vertical layout */}
+        <div className="relative mb-2">
+          <video 
+            ref={videoRef}
+            className="w-full h-[45vh] object-cover bg-black rounded-lg"
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster={currentExercise.posterUrl}
+            src={currentExercise.videoPath}
+            onClick={toggleVideoFullscreen}
+          >
+            Tu navegador no soporta videos HTML5.
+          </video>
+          <div className="absolute top-2 right-2 bg-[#2196F3] text-white rounded-full px-3 py-1 text-sm font-bold shadow-md">
+            {currentExercise.id}/5
           </div>
           
-          <CardContent className="p-5">
-            <h2 className="text-2xl font-bold mb-2">{currentExercise.title}</h2>
-            
+          {/* Fullscreen button */}
+          <Button 
+            variant="ghost"
+            size="icon"
+            className="absolute bottom-2 right-2 bg-black/50 text-white hover:bg-black/70"
+            onClick={toggleVideoFullscreen}
+          >
+            <span className="material-icons">fullscreen</span>
+          </Button>
+          
+          {/* Exercise title overlay */}
+          <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2">
+            <h2 className="text-xl font-bold">{currentExercise.title}</h2>
+          </div>
+        </div>
+        
+        {/* Exercise info and controls */}
+        <div className="bg-white rounded-xl shadow-md p-3">
+          <div className="flex justify-between items-center mb-2">
             {currentExercise.duration && (
-              <div className="flex items-center text-lg mb-4">
-                <span className="material-icons text-[#2196F3] mr-2">timer</span>
+              <div className="flex items-center text-sm">
+                <span className="material-icons text-[#2196F3] mr-1 text-sm">timer</span>
                 <span>{currentExercise.duration}</span>
               </div>
             )}
             
             {currentExercise.repetitions && !currentExercise.hasPairCounter && (
-              <div className="flex items-center text-lg mb-4">
-                <span className="material-icons text-[#2196F3] mr-2">repeat</span>
+              <div className="flex items-center text-sm">
+                <span className="material-icons text-[#2196F3] mr-1 text-sm">repeat</span>
                 <span>{currentExercise.repetitions} repeticiones</span>
               </div>
             )}
             
             {currentExercise.hasPairCounter && (
-              <div className="flex items-center text-lg mb-4">
-                <span className="material-icons text-[#2196F3] mr-2">repeat</span>
+              <div className="flex items-center text-sm">
+                <span className="material-icons text-[#2196F3] mr-1 text-sm">repeat</span>
                 <span>7 repeticiones por pierna</span>
               </div>
             )}
+          </div>
+          
+          {/* Exercise specific interactive elements */}
+          <div className="flex justify-center my-3">
+            {currentExercise.hasTimer && (
+              <TimerCircle 
+                seconds={state.remainingTime}
+                running={state.timerRunning}
+                onComplete={handleTimerComplete}
+                onTick={handleTimerTick}
+              />
+            )}
             
-            <p className="text-lg mb-6">{currentExercise.description}</p>
+            {currentExercise.hasCounter && currentExercise.repetitions && (
+              <Counter 
+                max={currentExercise.repetitions} 
+                onChange={(value) => handleCounterChange(currentExercise.id, value)}
+              />
+            )}
             
-            {/* Exercise specific interactive elements */}
-            <div className="flex justify-center mb-6">
-              {currentExercise.hasTimer && (
-                <TimerCircle 
-                  seconds={state.remainingTime}
-                  running={state.timerRunning}
-                  onComplete={handleTimerComplete}
-                  onTick={handleTimerTick}
-                />
-              )}
-              
-              {currentExercise.hasCounter && currentExercise.repetitions && (
+            {currentExercise.hasPairCounter && (
+              <div className="flex justify-center space-x-4">
                 <Counter 
-                  max={currentExercise.repetitions} 
-                  onChange={(value) => handleCounterChange(currentExercise.id, value)}
+                  max={7} 
+                  label="Izquierda"
+                  onChange={(value) => handlePairCounterChange('left', value)}
                 />
-              )}
-              
-              {currentExercise.hasPairCounter && (
-                <div className="flex justify-center space-x-6">
-                  <Counter 
-                    max={7} 
-                    label="Pierna izquierda"
-                    onChange={(value) => handlePairCounterChange('left', value)}
-                  />
-                  <Counter 
-                    max={7} 
-                    label="Pierna derecha"
-                    onChange={(value) => handlePairCounterChange('right', value)}
-                  />
-                </div>
-              )}
-            </div>
-            
-            {/* Action buttons */}
-            <div className="flex space-x-3">
-              {currentExercise.hasTimer && !state.timerRunning && (
-                <Button
-                  className="flex-1 min-h-[56px] bg-[#2196F3] rounded-full text-white text-lg font-bold py-3 px-5 flex items-center justify-center"
-                  onClick={startTimer}
-                  disabled={state.timerRunning}
-                >
-                  <span className="material-icons mr-2">play_arrow</span>
-                  Iniciar
-                </Button>
-              )}
-              
+                <Counter 
+                  max={7} 
+                  label="Derecha"
+                  onChange={(value) => handlePairCounterChange('right', value)}
+                />
+              </div>
+            )}
+          </div>
+          
+          {/* Action buttons */}
+          <div className="flex space-x-3">
+            {currentExercise.hasTimer && !state.timerRunning && (
               <Button
-                className={`flex-1 min-h-[56px] bg-[#4CAF50] rounded-full text-white text-lg font-bold py-3 px-5 flex items-center justify-center ${!completeButtonEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={completeExercise}
-                disabled={!completeButtonEnabled}
+                className="flex-1 min-h-[48px] bg-[#2196F3] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center"
+                onClick={startTimer}
+                disabled={state.timerRunning}
               >
-                <span className="material-icons mr-2">check</span>
-                Completar
+                <span className="material-icons mr-2">play_arrow</span>
+                Iniciar
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            )}
+            
+            <Button
+              className={`flex-1 min-h-[48px] bg-[#4CAF50] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center ${!completeButtonEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={completeExercise}
+              disabled={!completeButtonEnabled}
+            >
+              <span className="material-icons mr-2">check</span>
+              Completar
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Navigation Footer - Only shown when not in fullscreen */}
