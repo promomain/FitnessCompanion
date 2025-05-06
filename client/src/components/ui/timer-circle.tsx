@@ -62,21 +62,36 @@ export function TimerCircle({ seconds, running, onComplete, onTick }: TimerCircl
 
   return (
     <div 
-      className="timer-circle" 
-      data-progress={roundedProgress}
-      style={{
-        width: '120px',
-        height: '120px',
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative'
-      }}
+      className="timer-circle-container"
     >
-      <span className="text-3xl font-bold">{formatTime(remainingTime)}</span>
+      <div 
+        className="timer-circle" 
+        data-progress={roundedProgress}
+      >
+        <span className="text-3xl font-bold">{formatTime(remainingTime)}</span>
+      </div>
       
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        .timer-circle-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 1rem;
+        }
+        
+        .timer-circle {
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          background-color: rgba(255, 255, 255, 0.8);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
         .timer-circle::before {
           content: '';
           position: absolute;
@@ -113,7 +128,8 @@ export function TimerCircle({ seconds, running, onComplete, onTick }: TimerCircl
         .timer-circle[data-progress="80"]::after { transform: rotate(198deg); }
         .timer-circle[data-progress="90"]::after { transform: rotate(234deg); }
         .timer-circle[data-progress="100"]::after { transform: rotate(270deg); }
-      `}</style>
+        `
+      }} />
     </div>
   );
 }

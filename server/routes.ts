@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
@@ -25,6 +26,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(500).json({ message: "Error al guardar el progreso" });
     }
+  });
+
+  // Serve videos from attached_assets
+  app.use('/attached_assets', (req, res, next) => {
+    const options = {
+      root: path.join(process.cwd(), 'public', 'attached_assets'),
+      dotfiles: 'deny' as const,
+      headers: {
+        'Content-Type': 'video/mp4',
+        'Accept-Ranges': 'bytes'
+      }
+    };
+    
+    const fileName = req.path;
+    res.sendFile(fileName, options, (err) => {
+      if (err) {
+        console.error('Error sending video file:', err);
+        next(err);
+      }
+    });
   });
 
   const httpServer = createServer(app);
