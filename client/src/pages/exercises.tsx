@@ -284,15 +284,15 @@ export default function Exercises({ state, setState }: ExercisesProps) {
             <div 
               id="progress-bar" 
               className="h-full bg-[#4CAF50]" 
-              style={{ width: `${(state.currentExercise / exercises.length) * 100}%` }}
+              style={{ width: `${(state.currentExercise / (exercises.length - 1)) * 100}%` }}
             ></div>
           </div>
-          <div className="flex justify-between text-sm mt-1">
-            <span>1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
-            <span>5</span>
+          <div className="grid grid-cols-5 text-sm mt-1">
+            <span className="text-left">1</span>
+            <span className="text-center">2</span>
+            <span className="text-center">3</span>
+            <span className="text-center">4</span>
+            <span className="text-right">5</span>
           </div>
         </div>
 
