@@ -9,6 +9,17 @@
     <meta property="og:description" content="App para rutina diaria de ejercicios con 5 videos guiados" />
     <meta property="og:type" content="website" />
     <meta name="description" content="Aplicación para seguimiento de rutina diaria de ejercicios con videos instructivos, temporizador y contador de repeticiones" />
+    <!-- Script para manejar redirecciones en GitHub Pages -->
+    <script type="text/javascript">
+      // Si estamos siendo redirigidos desde 404.html
+      (function(){
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect != location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -19,7 +19,7 @@ Una aplicación para ayudarte a mantener un seguimiento de tus rutinas de ejerci
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/FitnessCompanion.git
+git clone https://github.com/promomain/FitnessCompanion.git
 
 # Instalar dependencias
 npm install
