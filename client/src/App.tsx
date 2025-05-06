@@ -14,6 +14,9 @@ export interface ExerciseState {
   exercisesCompleted: boolean[];
   timerRunning: boolean;
   remainingTime: number;
+  startTime: number | null;
+  exerciseTimes: number[];
+  exerciseStartTimes: number[];
 }
 
 function Router() {
@@ -22,6 +25,9 @@ function Router() {
     exercisesCompleted: [false, false, false, false, false],
     timerRunning: false,
     remainingTime: 300, // 5 minutes in seconds
+    startTime: null,
+    exerciseTimes: [0, 0, 0, 0, 0],
+    exerciseStartTimes: [0, 0, 0, 0, 0]
   });
 
   const resetState = () => {
@@ -30,6 +36,9 @@ function Router() {
       exercisesCompleted: [false, false, false, false, false],
       timerRunning: false,
       remainingTime: 300,
+      startTime: null,
+      exerciseTimes: [0, 0, 0, 0, 0],
+      exerciseStartTimes: [0, 0, 0, 0, 0]
     });
   };
 

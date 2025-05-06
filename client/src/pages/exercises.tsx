@@ -56,9 +56,21 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     const newCompletedState = [...state.exercisesCompleted];
     newCompletedState[state.currentExercise] = true;
     
+    // Record the time spent on this exercise
+    const now = Date.now();
+    const newExerciseTimes = [...state.exerciseTimes];
+    const startTime = state.exerciseStartTimes[state.currentExercise] || 
+                      state.exerciseStartTimes[Math.max(0, state.currentExercise - 1)] || 
+                      now;
+    
+    // Calculate time spent in seconds
+    const timeSpent = Math.floor((now - startTime) / 1000);
+    newExerciseTimes[state.currentExercise] = timeSpent;
+    
     setState({
       ...state,
-      exercisesCompleted: newCompletedState
+      exercisesCompleted: newCompletedState,
+      exerciseTimes: newExerciseTimes
     });
     
     setNextButtonEnabled(true);
@@ -203,11 +215,21 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     }
   }, [state.currentExercise, isVideoFullscreen, fullscreenHandle]);
   
-  // Auto-start videos when they change
+  // Auto-start videos when they change and track exercise time
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.play().catch(err => console.log('Video autoplay failed:', err));
     }
+    
+    // Set start time for the current exercise
+    const now = Date.now();
+    const newExerciseStartTimes = [...state.exerciseStartTimes];
+    newExerciseStartTimes[state.currentExercise] = now;
+    
+    setState({
+      ...state,
+      exerciseStartTimes: newExerciseStartTimes
+    });
   }, [state.currentExercise]);
   
   return (
