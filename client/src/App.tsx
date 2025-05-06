@@ -17,23 +17,32 @@ export interface ExerciseState {
 }
 
 function Router() {
-  // Inicializar estado con el tiempo actual para asegurar que siempre tengamos un tiempo de inicio
+  // Obtener el tiempo de inicio del localStorage si existe (para cronometrar desde el botón "Comenzar Rutina")
+  const savedStartTime = localStorage.getItem('exercise_start_time');
+  const initialStartTime = savedStartTime ? parseInt(savedStartTime) : null;
+  
+  // Inicializar estado con el tiempo guardado si existe, o null si no
   const [state, setState] = useState<ExerciseState>({
     currentExercise: 0,
     exercisesCompleted: [false, false, false, false, false],
-    startTime: Date.now(), // Inicializar tiempo de inicio al cargar la app
+    startTime: initialStartTime, // Usar el tiempo guardado o null
     totalTime: 0
   });
+  
+  console.log("App inicializada con tiempo de inicio:", initialStartTime);
 
   const resetState = () => {
-    // Al reiniciar, establecemos un nuevo tiempo de inicio
+    // Al reiniciar, limpiamos el tiempo de inicio guardado en localStorage
+    localStorage.removeItem('exercise_start_time');
+    
+    // Reiniciamos el estado para empezar de nuevo
     setState({
       currentExercise: 0,
       exercisesCompleted: [false, false, false, false, false],
-      startTime: Date.now(), // Nuevo tiempo de inicio
+      startTime: null, // El tiempo comenzará cuando se presione "Comenzar Rutina"
       totalTime: 0
     });
-    console.log("Estado reiniciado con nuevo tiempo de inicio:", Date.now());
+    console.log("Estado reiniciado, localStorage limpiado");
   };
 
   return (

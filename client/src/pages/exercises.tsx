@@ -49,13 +49,28 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     trackMouse: true
   });
 
-  // Start the global timer when the component mounts if not already started
+  // Verificar si necesitamos iniciar el cronómetro cuando el componente se monta
   useEffect(() => {
-    if (!state.startTime) {
-      console.log("Iniciando cronómetro");
+    // Obtener el tiempo de inicio del localStorage
+    const savedStartTime = localStorage.getItem('exercise_start_time');
+    
+    // Si no hay tiempo guardado en el estado pero sí en localStorage, usarlo
+    if (!state.startTime && savedStartTime) {
+      const parsedStartTime = parseInt(savedStartTime);
+      console.log("Usando tiempo de inicio desde localStorage:", parsedStartTime);
       setState({
         ...state,
-        startTime: Date.now()
+        startTime: parsedStartTime
+      });
+    } 
+    // Si no hay tiempo ni en el estado ni en localStorage, crear uno nuevo
+    else if (!state.startTime) {
+      console.log("Sin tiempo de inicio, creando uno nuevo");
+      const newStartTime = Date.now();
+      localStorage.setItem('exercise_start_time', newStartTime.toString());
+      setState({
+        ...state,
+        startTime: newStartTime
       });
     }
   }, []);

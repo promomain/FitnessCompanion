@@ -56,7 +56,12 @@ export default function Home() {
             </div>
             
             <div className="flex flex-col">
-              <Link href="/exercises">
+              <Link href="/exercises" onClick={() => {
+                // Iniciar cronómetro al comenzar la rutina y almacenar en localStorage
+                const startTime = Date.now();
+                localStorage.setItem('exercise_start_time', startTime.toString());
+                console.log("Cronómetro iniciado desde botón Comenzar Rutina:", startTime);
+              }}>
                 <button 
                   className="min-h-[56px] rounded-full bg-[#2196F3] text-white text-xl font-bold py-4 px-6 flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors"
                 >
