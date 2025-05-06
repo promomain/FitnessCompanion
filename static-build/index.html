@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>Rutina de Ejercicios Diarios</title>
+  <meta name="description" content="Aplicación para seguimiento de rutina diaria de ejercicios con videos instructivos, temporizador y contador de repeticiones">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <div id="homePage" class="page active">
+      <div class="container">
+        <h1>Rutina de Ejercicios Diarios</h1>
+        <p class="subtitle">Completa tu rutina diaria en 30 minutos</p>
+        
+        <div class="stats-container">
+          <div class="stat-box">
+            <span class="stat-number" id="streak">0</span>
+            <span class="stat-label">Días seguidos</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label" id="lastCompleted">Nunca completado</span>
+            <span class="stat-label">Último ejercicio</span>
+          </div>
+        </div>
+        
+        <div class="exercise-list">
+          <h2>Ejercicios (5)</h2>
+          <ul>
+            <li>1. Elíptica 5mn</li>
+            <li>2. Caminata ida y vuelta x10</li>
+            <li>3. Sentadillas x10</li>
+            <li>4. Sentadilla + caminata x5</li>
+            <li>5. Parado en un pie con rodilla 90 grados</li>
+          </ul>
+        </div>
+        
+        <button id="startButton" class="btn-primary">Comenzar Rutina</button>
+      </div>
+    </div>
+    
+    <div id="exercisesPage" class="page">
+      <div id="exerciseContainer">
+        <div class="exercise-header">
+          <h2 id="exerciseTitle">Título del ejercicio</h2>
+          <div class="exercise-circles">
+            <div class="circle" data-index="0">1</div>
+            <div class="circle" data-index="1">2</div>
+            <div class="circle" data-index="2">3</div>
+            <div class="circle" data-index="3">4</div>
+            <div class="circle" data-index="4">5</div>
+          </div>
+        </div>
+        
+        <div class="video-container">
+          <video id="exerciseVideo" autoplay muted loop playsinline>
+            <source src="" type="video/mp4">
+          </video>
+        </div>
+        
+        <div class="exercise-description" id="exerciseDescription">
+          Descripción del ejercicio
+        </div>
+        
+        <div id="timerContainer" class="hidden">
+          <div class="timer">
+            <div class="timer-circle">
+              <span id="timerValue">5:00</span>
+            </div>
+          </div>
+        </div>
+        
+        <div id="counterContainer" class="hidden">
+          <div class="counter">
+            <button id="decreaseButton" class="counter-btn">-</button>
+            <div class="counter-value">
+              <span id="counterValue">0</span>
+              <span id="counterTotal">/10</span>
+            </div>
+            <button id="increaseButton" class="counter-btn">+</button>
+          </div>
+        </div>
+        
+        <div class="nav-buttons">
+          <button id="prevButton" class="btn-secondary">Anterior</button>
+          <button id="nextButton" class="btn-primary">Siguiente</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="completionPage" class="page">
+      <div class="container">
+        <h1>¡Rutina Completada!</h1>
+        
+        <div class="completion-stats">
+          <div class="time-container">
+            <span class="material-icons time-icon">schedule</span>
+            <div class="time-text">
+              <span class="time-value" id="totalTime">0:00</span>
+              <span class="time-label">Tiempo total</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="progress-container">
+          <div class="progress-circles">
+            <div class="circle completed">1</div>
+            <div class="circle completed">2</div>
+            <div class="circle completed">3</div>
+            <div class="circle completed">4</div>
+            <div class="circle completed">5</div>
+          </div>
+        </div>
+        
+        <p class="completion-message">¡Excelente trabajo! Has completado todos los ejercicios de hoy.</p>
+        
+        <button id="restartButton" class="btn-primary">Volver a Empezar</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="main.js"></script>
+</body>
+</html>
