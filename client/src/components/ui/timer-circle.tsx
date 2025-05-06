@@ -68,7 +68,7 @@ export function TimerCircle({ seconds, running, onComplete, onTick }: TimerCircl
         className="timer-circle" 
         data-progress={roundedProgress}
       >
-        <span className="text-3xl font-bold">{formatTime(remainingTime)}</span>
+        <span className="text-3xl font-bold text-shadow">{formatTime(remainingTime)}</span>
       </div>
       
       <style dangerouslySetInnerHTML={{
@@ -77,19 +77,24 @@ export function TimerCircle({ seconds, running, onComplete, onTick }: TimerCircl
           display: flex;
           justify-content: center;
           align-items: center;
-          padding: 1rem;
+          padding: 0.5rem;
         }
         
         .timer-circle {
-          width: 120px;
-          height: 120px;
+          width: 100px;
+          height: 100px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           position: relative;
-          background-color: rgba(255, 255, 255, 0.8);
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          background-color: rgba(0, 0, 0, 0.5);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .text-shadow {
+          color: white;
+          text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.8);
         }
         
         .timer-circle::before {
@@ -100,7 +105,7 @@ export function TimerCircle({ seconds, running, onComplete, onTick }: TimerCircl
           width: 100%;
           height: 100%;
           border-radius: 50%;
-          border: 8px solid #e0e0e0;
+          border: 6px solid rgba(255, 255, 255, 0.3);
         }
 
         .timer-circle::after {
@@ -111,7 +116,7 @@ export function TimerCircle({ seconds, running, onComplete, onTick }: TimerCircl
           width: 100%;
           height: 100%;
           border-radius: 50%;
-          border: 8px solid transparent;
+          border: 6px solid transparent;
           border-top-color: #2196F3;
           transform: rotate(-90deg);
           transition: all 0.2s linear;

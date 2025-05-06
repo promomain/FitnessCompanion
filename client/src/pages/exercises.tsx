@@ -210,10 +210,10 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     <div className="min-h-screen bg-[#F5F7FA] pb-24" {...swipeHandlers}>
       {/* Header */}
       <header className={`sticky top-0 bg-white shadow-md z-10 ${isVideoFullscreen ? 'hidden' : ''}`}>
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-[#2196F3]">Rutina de Ejercicios</h1>
+        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+          <h1 className="text-xl font-bold text-[#2196F3]">Rutina de Ejercicios</h1>
           <div className="flex items-center">
-            <span className="material-icons text-[#FF9800] text-3xl">fitness_center</span>
+            <span className="material-icons text-[#FF9800] text-2xl">fitness_center</span>
           </div>
         </div>
       </header>
@@ -300,11 +300,11 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           </div>
         </div>
 
-        {/* Current Exercise - Prioritize video with vertical layout */}
+        {/* Current Exercise - Maximized video with vertical layout */}
         <div className="relative mb-2">
           <video 
             ref={videoRef}
-            className="w-full h-[45vh] object-cover bg-black rounded-lg"
+            className="w-full h-[70vh] object-cover bg-black rounded-lg"
             autoPlay
             loop
             muted
@@ -315,6 +315,8 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           >
             Tu navegador no soporta videos HTML5.
           </video>
+          
+          {/* Exercise number indicator */}
           <div className="absolute top-2 right-2 bg-[#2196F3] text-white rounded-full px-3 py-1 text-sm font-bold shadow-md">
             {currentExercise.id}/5
           </div>
@@ -331,91 +333,69 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           
           {/* Exercise title overlay */}
           <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2">
-            <h2 className="text-xl font-bold">{currentExercise.title}</h2>
-          </div>
-        </div>
-        
-        {/* Exercise info and controls */}
-        <div className="bg-white rounded-xl shadow-md p-3">
-          <div className="flex justify-between items-center mb-2">
-            {currentExercise.duration && (
-              <div className="flex items-center text-sm">
-                <span className="material-icons text-[#2196F3] mr-1 text-sm">timer</span>
-                <span>{currentExercise.duration}</span>
-              </div>
-            )}
-            
-            {currentExercise.repetitions && !currentExercise.hasPairCounter && (
-              <div className="flex items-center text-sm">
-                <span className="material-icons text-[#2196F3] mr-1 text-sm">repeat</span>
-                <span>{currentExercise.repetitions} repeticiones</span>
-              </div>
-            )}
-            
-            {currentExercise.hasPairCounter && (
-              <div className="flex items-center text-sm">
-                <span className="material-icons text-[#2196F3] mr-1 text-sm">repeat</span>
-                <span>7 repeticiones por pierna</span>
-              </div>
-            )}
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">{currentExercise.title}</h2>
+              
+              {currentExercise.duration && (
+                <div className="flex items-center text-sm">
+                  <span className="material-icons text-white mr-1 text-sm">timer</span>
+                  <span>{currentExercise.duration}</span>
+                </div>
+              )}
+              
+              {currentExercise.repetitions && !currentExercise.hasPairCounter && (
+                <div className="flex items-center text-sm">
+                  <span className="material-icons text-white mr-1 text-sm">repeat</span>
+                  <span>{currentExercise.repetitions}x</span>
+                </div>
+              )}
+              
+              {currentExercise.hasPairCounter && (
+                <div className="flex items-center text-sm">
+                  <span className="material-icons text-white mr-1 text-sm">repeat</span>
+                  <span>7x por pierna</span>
+                </div>
+              )}
+            </div>
           </div>
           
-          {/* Exercise specific interactive elements */}
-          <div className="flex justify-center my-3">
-            {currentExercise.hasTimer && (
+          {/* Timer overlay for exercise 1 */}
+          {currentExercise.hasTimer && (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <TimerCircle 
                 seconds={state.remainingTime}
                 running={state.timerRunning}
                 onComplete={handleTimerComplete}
                 onTick={handleTimerTick}
               />
-            )}
-            
-            {currentExercise.hasCounter && currentExercise.repetitions && (
-              <Counter 
-                max={currentExercise.repetitions} 
-                onChange={(value) => handleCounterChange(currentExercise.id, value)}
-              />
-            )}
-            
-            {currentExercise.hasPairCounter && (
-              <div className="flex justify-center space-x-4">
-                <Counter 
-                  max={7} 
-                  label="Izquierda"
-                  onChange={(value) => handlePairCounterChange('left', value)}
-                />
-                <Counter 
-                  max={7} 
-                  label="Derecha"
-                  onChange={(value) => handlePairCounterChange('right', value)}
-                />
-              </div>
-            )}
-          </div>
+            </div>
+          )}
           
-          {/* Action buttons */}
-          <div className="flex space-x-3">
-            {currentExercise.hasTimer && !state.timerRunning && (
+          {/* Start timer button overlay for exercise 1 */}
+          {currentExercise.hasTimer && !state.timerRunning && (
+            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
               <Button
-                className="flex-1 min-h-[48px] bg-[#2196F3] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center"
+                className="min-h-[48px] bg-[#2196F3] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center"
                 onClick={startTimer}
                 disabled={state.timerRunning}
               >
                 <span className="material-icons mr-2">play_arrow</span>
                 Iniciar
               </Button>
-            )}
-            
-            <Button
-              className={`flex-1 min-h-[48px] bg-[#4CAF50] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center ${!completeButtonEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-              onClick={completeExercise}
-              disabled={!completeButtonEnabled}
-            >
-              <span className="material-icons mr-2">check</span>
-              Completar
-            </Button>
-          </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Completion button - Only shown if not in fullscreen */}
+        <div className="flex justify-center mb-2">
+          <Button
+            className={`min-h-[48px] bg-[#4CAF50] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center ${!completeButtonEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={completeExercise}
+            disabled={!completeButtonEnabled}
+          >
+            <span className="material-icons mr-2">check</span>
+            Completar
+          </Button>
         </div>
       </div>
 
