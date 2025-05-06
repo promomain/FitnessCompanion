@@ -12,33 +12,24 @@ import { useState } from "react";
 export interface ExerciseState {
   currentExercise: number;
   exercisesCompleted: boolean[];
-  timerRunning: boolean;
-  remainingTime: number;
   startTime: number | null;
-  exerciseTimes: number[];
-  exerciseStartTimes: number[];
+  totalTime: number;
 }
 
 function Router() {
   const [state, setState] = useState<ExerciseState>({
     currentExercise: 0,
     exercisesCompleted: [false, false, false, false, false],
-    timerRunning: false,
-    remainingTime: 300, // 5 minutes in seconds
     startTime: null,
-    exerciseTimes: [0, 0, 0, 0, 0],
-    exerciseStartTimes: [0, 0, 0, 0, 0]
+    totalTime: 0
   });
 
   const resetState = () => {
     setState({
       currentExercise: 0,
       exercisesCompleted: [false, false, false, false, false],
-      timerRunning: false,
-      remainingTime: 300,
       startTime: null,
-      exerciseTimes: [0, 0, 0, 0, 0],
-      exerciseStartTimes: [0, 0, 0, 0, 0]
+      totalTime: 0
     });
   };
 
@@ -49,7 +40,7 @@ function Router() {
         {() => <Exercises state={state} setState={setState} />}
       </Route>
       <Route path="/completion">
-        {() => <Completion resetState={resetState} exerciseTimes={state.exerciseTimes} startTime={state.startTime} />}
+        {() => <Completion resetState={resetState} totalTime={state.totalTime} startTime={state.startTime} />}
       </Route>
       <Route component={NotFound} />
     </Switch>

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TimerCircle } from "@/components/ui/timer-circle";
 import { Counter } from "@/components/ui/counter";
 import { exercises } from "@/lib/exercise-data";
 import { apiRequest } from "@/lib/queryClient";
@@ -32,14 +31,13 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     exercise5Right: 0
   });
 
-  // Update button states based on current exercise and progress
-  const [completeButtonEnabled, setCompleteButtonEnabled] = useState(false);
-  const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
+  // Next button always enabled to allow skipping exercises
+  const [nextButtonEnabled] = useState(true);
   
   // Set up swipe handlers for navigation between exercises
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
-      if (state.currentExercise < exercises.length - 1 && nextButtonEnabled) {
+      if (state.currentExercise < exercises.length - 1) {
         goToNextExercise();
       }
     },
@@ -51,48 +49,43 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     trackMouse: true
   });
 
+  // Start the global timer when the component mounts if not already started
+  useEffect(() => {
+    if (!state.startTime) {
+      setState({
+        ...state,
+        startTime: Date.now()
+      });
+    }
+  }, []);
+
   // Update exercise completion status
   const completeExercise = async () => {
     const newCompletedState = [...state.exercisesCompleted];
     newCompletedState[state.currentExercise] = true;
     
-    // Record the time spent on this exercise
-    const now = Date.now();
-    const newExerciseTimes = [...state.exerciseTimes];
-    const startTime = state.exerciseStartTimes[state.currentExercise] || 
-                      state.exerciseStartTimes[Math.max(0, state.currentExercise - 1)] || 
-                      now;
-    
-    // Calculate time spent in seconds
-    const timeSpent = Math.floor((now - startTime) / 1000);
-    newExerciseTimes[state.currentExercise] = timeSpent;
-    
     setState({
       ...state,
-      exercisesCompleted: newCompletedState,
-      exerciseTimes: newExerciseTimes
+      exercisesCompleted: newCompletedState
     });
-    
-    setNextButtonEnabled(true);
   };
 
   // Navigate to the next or previous exercise
   const goToNextExercise = async () => {
-    // Check if all exercises are completed
-    const allCompleted = state.exercisesCompleted.every(status => status);
+    // Mark current exercise as completed
+    const newCompletedState = [...state.exercisesCompleted];
+    newCompletedState[state.currentExercise] = true;
     
-    if (state.currentExercise === exercises.length - 1 && allCompleted) {
-      // Make sure we record time for the last exercise
+    // Check if we're on the last exercise
+    if (state.currentExercise === exercises.length - 1) {
+      // Calculate total time and navigate to completion
       const now = Date.now();
-      const newExerciseTimes = [...state.exerciseTimes];
-      const startTime = state.exerciseStartTimes[state.currentExercise] || now;
-      const timeSpent = Math.floor((now - startTime) / 1000);
-      newExerciseTimes[state.currentExercise] = timeSpent;
+      const totalTimeSeconds = state.startTime ? Math.floor((now - state.startTime) / 1000) : 0;
       
-      // Update state with final times
       setState({
         ...state,
-        exerciseTimes: newExerciseTimes
+        exercisesCompleted: newCompletedState,
+        totalTime: totalTimeSeconds
       });
       
       // Complete the routine
@@ -108,7 +101,8 @@ export default function Exercises({ state, setState }: ExercisesProps) {
       // Go to next exercise
       setState({
         ...state,
-        currentExercise: state.currentExercise + 1
+        currentExercise: state.currentExercise + 1,
+        exercisesCompleted: newCompletedState
       });
     }
   };
@@ -121,63 +115,6 @@ export default function Exercises({ state, setState }: ExercisesProps) {
       });
     }
   };
-
-  // Start the timer for the first exercise
-  const startTimer = () => {
-    setState({
-      ...state,
-      timerRunning: true
-    });
-  };
-
-  // Handle timer completion
-  const handleTimerComplete = () => {
-    setCompleteButtonEnabled(true);
-  };
-
-  const handleTimerTick = (remainingTime: number) => {
-    setState({
-      ...state,
-      remainingTime
-    });
-  };
-
-  // Update exercise completion status when counters change
-  useEffect(() => {
-    const currentExerciseObj = exercises[state.currentExercise];
-
-    if (currentExerciseObj.id === 1) {
-      // For timer exercise, completeButtonEnabled is handled by the timer
-      return;
-    } else if (currentExerciseObj.id === 5) {
-      // For paired counter exercise
-      setCompleteButtonEnabled(
-        counters.exercise5Left >= 7 && counters.exercise5Right >= 7
-      );
-    } else if (currentExerciseObj.hasCounter && currentExerciseObj.repetitions) {
-      // For regular counter exercises
-      let counterValue = 0;
-      
-      switch (currentExerciseObj.id) {
-        case 2: counterValue = counters.exercise2; break;
-        case 3: counterValue = counters.exercise3; break;
-        case 4: counterValue = counters.exercise4; break;
-      }
-      
-      setCompleteButtonEnabled(counterValue >= currentExerciseObj.repetitions);
-    }
-  }, [counters, state.currentExercise, state.remainingTime]);
-  
-  // Update next button state - always enabled to allow skipping exercises
-  useEffect(() => {
-    // Next button is always enabled to allow skipping 
-    setNextButtonEnabled(true);
-    
-    // Auto-complete the exercise when navigating to ensure progress tracking
-    if (!state.exercisesCompleted[state.currentExercise]) {
-      completeExercise();
-    }
-  }, [state.currentExercise]);
 
   // Handle counter changes
   const handleCounterChange = (exercise: number, value: number) => {
@@ -230,21 +167,16 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     }
   }, [state.currentExercise, isVideoFullscreen, fullscreenHandle]);
   
-  // Auto-start videos when they change and track exercise time
+  // Auto-start videos when they change
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.play().catch(err => console.log('Video autoplay failed:', err));
     }
     
-    // Set start time for the current exercise
-    const now = Date.now();
-    const newExerciseStartTimes = [...state.exerciseStartTimes];
-    newExerciseStartTimes[state.currentExercise] = now;
-    
-    setState({
-      ...state,
-      exerciseStartTimes: newExerciseStartTimes
-    });
+    // Auto-complete the exercise when navigating to ensure progress tracking
+    if (!state.exercisesCompleted[state.currentExercise]) {
+      completeExercise();
+    }
   }, [state.currentExercise]);
   
   return (
@@ -391,31 +323,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
             </div>
           </div>
           
-          {/* Timer overlay for exercise 1 */}
-          {currentExercise?.hasTimer && (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <TimerCircle 
-                seconds={state.remainingTime}
-                running={state.timerRunning}
-                onComplete={handleTimerComplete}
-                onTick={handleTimerTick}
-              />
-            </div>
-          )}
-          
-          {/* Start timer button overlay for exercise 1 */}
-          {currentExercise?.hasTimer && !state.timerRunning && (
-            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
-              <Button
-                className="min-h-[48px] bg-[#2196F3] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center"
-                onClick={startTimer}
-                disabled={state.timerRunning}
-              >
-                <span className="material-icons mr-2">play_arrow</span>
-                Iniciar
-              </Button>
-            </div>
-          )}
+
         </div>
         
 
