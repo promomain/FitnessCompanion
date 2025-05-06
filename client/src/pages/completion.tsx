@@ -13,6 +13,10 @@ export default function Completion({ resetState, totalTime, startTime }: Complet
   // Use the provided total time or calculate it from start time if available
   const totalTimeSeconds = totalTime || (startTime ? Math.floor((Date.now() - startTime) / 1000) : 0);
   
+  console.log("Pantalla de finalización - Tiempo total:", totalTimeSeconds, "segundos");
+  console.log("Tiempo total proporcionado:", totalTime);
+  console.log("Tiempo de inicio:", startTime);
+  
   // Format time helper function
   const formatTime = (seconds: number): string => {
     if (seconds < 60) return `${seconds} segundos`;

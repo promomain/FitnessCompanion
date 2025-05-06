@@ -52,6 +52,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
   // Start the global timer when the component mounts if not already started
   useEffect(() => {
     if (!state.startTime) {
+      console.log("Iniciando cronómetro");
       setState({
         ...state,
         startTime: Date.now()
@@ -81,6 +82,10 @@ export default function Exercises({ state, setState }: ExercisesProps) {
       // Calculate total time and navigate to completion
       const now = Date.now();
       const totalTimeSeconds = state.startTime ? Math.floor((now - state.startTime) / 1000) : 0;
+      
+      console.log("Tiempo total de ejercicio:", totalTimeSeconds, "segundos");
+      console.log("Tiempo de inicio:", state.startTime);
+      console.log("Tiempo actual:", now);
       
       setState({
         ...state,
