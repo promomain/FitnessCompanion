@@ -96,10 +96,17 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     if (state.currentExercise === exercises.length - 1) {
       // Calculate total time and navigate to completion
       const now = Date.now();
-      const totalTimeSeconds = state.startTime ? Math.floor((now - state.startTime) / 1000) : 0;
+      
+      // Intentar obtener el tiempo de inicio desde localStorage si no está en el estado
+      const savedStartTime = localStorage.getItem('exercise_start_time');
+      const effectiveStartTime = state.startTime || (savedStartTime ? parseInt(savedStartTime) : null);
+      
+      const totalTimeSeconds = effectiveStartTime ? Math.floor((now - effectiveStartTime) / 1000) : 0;
       
       console.log("Tiempo total de ejercicio:", totalTimeSeconds, "segundos");
-      console.log("Tiempo de inicio:", state.startTime);
+      console.log("Tiempo de inicio (estado):", state.startTime);
+      console.log("Tiempo de inicio (localStorage):", savedStartTime);
+      console.log("Tiempo de inicio efectivo:", effectiveStartTime);
       console.log("Tiempo actual:", now);
       
       // Actualizar el estado con el tiempo total calculado

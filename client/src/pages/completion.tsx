@@ -10,14 +10,20 @@ interface CompletionProps {
 }
 
 export default function Completion({ resetState, totalTime, startTime }: CompletionProps) {
-  // Always use the provided total time, o calculate it directly if needed as fallback
+  // Intentar obtener el tiempo de inicio desde localStorage si no está disponible
+  const savedStartTime = localStorage.getItem('exercise_start_time');
+  const effectiveStartTime = startTime || (savedStartTime ? parseInt(savedStartTime) : null);
+  
+  // Usar el tiempo total proporcionado o calcularlo si es necesario
   const totalTimeSeconds = totalTime > 0 
     ? totalTime 
-    : (startTime ? Math.floor((Date.now() - startTime) / 1000) : 0);
+    : (effectiveStartTime ? Math.floor((Date.now() - effectiveStartTime) / 1000) : 0);
   
   console.log("Pantalla de finalización - Tiempo total:", totalTimeSeconds, "segundos");
   console.log("Tiempo total proporcionado:", totalTime);
-  console.log("Tiempo de inicio:", startTime);
+  console.log("Tiempo de inicio (props):", startTime);
+  console.log("Tiempo de inicio (localStorage):", savedStartTime);
+  console.log("Tiempo de inicio efectivo:", effectiveStartTime);
   
   // Format time helper function
   const formatTime = (seconds: number): string => {
