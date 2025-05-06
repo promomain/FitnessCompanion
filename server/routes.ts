@@ -28,10 +28,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Serve videos from attached_assets
-  app.use('/attached_assets', (req, res, next) => {
+  // Serve videos from public/videos
+  app.use('/videos', (req, res, next) => {
     const options = {
-      root: path.join(process.cwd(), 'public', 'attached_assets'),
+      root: path.join(process.cwd(), 'public', 'videos'),
       dotfiles: 'deny' as const,
       headers: {
         'Content-Type': 'video/mp4',
