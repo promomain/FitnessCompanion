@@ -5,7 +5,7 @@ export interface Exercise {
   duration?: string;
   repetitions?: number;
   videoPath: string;
-  posterUrl: string;
+  posterUrl?: string;
   hasTimer?: boolean;
   hasCounter?: boolean;
   hasPairCounter?: boolean;

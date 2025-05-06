@@ -339,7 +339,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
             loop
             muted
             playsInline
-            poster={currentExercise.posterUrl}
+            poster={currentExercise.posterUrl || ''}
             src={currentExercise.videoPath}
             onClick={toggleVideoFullscreen}
           >
