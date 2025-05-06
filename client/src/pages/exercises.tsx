@@ -128,7 +128,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
       }
       
       // Navigate to completion page
-      navigate('/completion');
+      window.location.hash = "#/completion";
     } else {
       // Go to next exercise
       setState({

@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -7,6 +7,9 @@ export default function Home() {
     queryKey: ['/api/progress'],
     staleTime: 60000, // 1 minute
   });
+
+  // Obtenemos la función de navegación
+  const [location, navigate] = useLocation();
 
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
@@ -56,19 +59,20 @@ export default function Home() {
             </div>
             
             <div className="flex flex-col">
-              <Link href="/exercises" onClick={() => {
-                // Iniciar cronómetro al comenzar la rutina y almacenar en localStorage
-                const startTime = Date.now();
-                localStorage.setItem('exercise_start_time', startTime.toString());
-                console.log("Cronómetro iniciado desde botón Comenzar Rutina:", startTime);
-              }}>
-                <button 
-                  className="min-h-[56px] rounded-full bg-[#2196F3] text-white text-xl font-bold py-4 px-6 flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors"
-                >
-                  <span className="material-icons mr-2">play_arrow</span>
-                  Comenzar Rutina
-                </button>
-              </Link>
+              <button 
+                onClick={() => {
+                  // Iniciar cronómetro al comenzar la rutina y almacenar en localStorage
+                  const startTime = Date.now();
+                  localStorage.setItem('exercise_start_time', startTime.toString());
+                  console.log("Cronómetro iniciado desde botón Comenzar Rutina:", startTime);
+                  // Usar hash para la navegación
+                  window.location.hash = "#/exercises";
+                }}
+                className="min-h-[56px] rounded-full bg-[#2196F3] text-white text-xl font-bold py-4 px-6 flex items-center justify-center shadow-lg hover:bg-blue-600 transition-colors"
+              >
+                <span className="material-icons mr-2">play_arrow</span>
+                Comenzar Rutina
+              </button>
             </div>
           </CardContent>
         </Card>

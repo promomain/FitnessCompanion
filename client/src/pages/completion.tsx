@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { exercises } from "@/lib/exercise-data";
@@ -80,15 +80,16 @@ export default function Completion({ resetState, totalTime, startTime }: Complet
               </ul>
             </div>
             
-            <Link href="/">
-              <Button 
-                className="w-full min-h-[56px] bg-[#2196F3] rounded-full text-white text-lg font-bold py-4 px-6 flex items-center justify-center"
-                onClick={resetState}
-              >
-                <span className="material-icons mr-2">home</span>
-                Volver al Inicio
-              </Button>
-            </Link>
+            <Button 
+              className="w-full min-h-[56px] bg-[#2196F3] rounded-full text-white text-lg font-bold py-4 px-6 flex items-center justify-center"
+              onClick={() => {
+                resetState();
+                window.location.hash = "#/";
+              }}
+            >
+              <span className="material-icons mr-2">home</span>
+              Volver al Inicio
+            </Button>
           </CardContent>
         </Card>
       </div>
