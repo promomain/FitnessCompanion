@@ -87,11 +87,16 @@ export default function Exercises({ state, setState }: ExercisesProps) {
       console.log("Tiempo de inicio:", state.startTime);
       console.log("Tiempo actual:", now);
       
-      setState({
+      // Actualizar el estado con el tiempo total calculado
+      const updatedState = {
         ...state,
         exercisesCompleted: newCompletedState,
         totalTime: totalTimeSeconds
-      });
+      };
+      setState(updatedState);
+      
+      // Asegurarnos de que el tiempo total se actualice antes de navegar
+      console.log("Estado actualizado con tiempo total:", updatedState.totalTime);
       
       // Complete the routine
       try {

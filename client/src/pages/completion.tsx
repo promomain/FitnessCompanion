@@ -10,8 +10,10 @@ interface CompletionProps {
 }
 
 export default function Completion({ resetState, totalTime, startTime }: CompletionProps) {
-  // Use the provided total time or calculate it from start time if available
-  const totalTimeSeconds = totalTime || (startTime ? Math.floor((Date.now() - startTime) / 1000) : 0);
+  // Always use the provided total time, o calculate it directly if needed as fallback
+  const totalTimeSeconds = totalTime > 0 
+    ? totalTime 
+    : (startTime ? Math.floor((Date.now() - startTime) / 1000) : 0);
   
   console.log("Pantalla de finalización - Tiempo total:", totalTimeSeconds, "segundos");
   console.log("Tiempo total proporcionado:", totalTime);
