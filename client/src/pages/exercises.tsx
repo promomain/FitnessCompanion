@@ -147,8 +147,12 @@ export default function Exercises({ state, setState }: ExercisesProps) {
   useEffect(() => {
     // Next button is always enabled to allow skipping 
     setNextButtonEnabled(true);
-    setCompleteButtonEnabled(state.exercisesCompleted[state.currentExercise]);
-  }, [state.currentExercise, state.exercisesCompleted]);
+    
+    // Auto-complete the exercise when navigating to ensure progress tracking
+    if (!state.exercisesCompleted[state.currentExercise]) {
+      completeExercise();
+    }
+  }, [state.currentExercise]);
 
   // Handle counter changes
   const handleCounterChange = (exercise: number, value: number) => {
@@ -266,15 +270,6 @@ export default function Exercises({ state, setState }: ExercisesProps) {
               >
                 <span className="material-icons">fullscreen_exit</span>
               </Button>
-              
-              <Button
-                className={`bg-[#4CAF50] text-white ${!completeButtonEnabled ? 'opacity-50' : ''}`}
-                onClick={completeExercise}
-                disabled={!completeButtonEnabled}
-              >
-                <span className="material-icons mr-2">check</span>
-                Completar
-              </Button>
             </div>
           </div>
         ) : null}
@@ -386,17 +381,7 @@ export default function Exercises({ state, setState }: ExercisesProps) {
           )}
         </div>
         
-        {/* Completion button - Only shown if not in fullscreen */}
-        <div className="flex justify-center mb-2">
-          <Button
-            className={`min-h-[48px] bg-[#4CAF50] rounded-full text-white text-lg font-bold py-2 px-4 flex items-center justify-center ${!completeButtonEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            onClick={completeExercise}
-            disabled={!completeButtonEnabled}
-          >
-            <span className="material-icons mr-2">check</span>
-            Completar
-          </Button>
-        </div>
+
       </div>
 
       {/* Navigation Footer - Only shown when not in fullscreen */}
