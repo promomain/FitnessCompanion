@@ -5,21 +5,13 @@ import { exercises } from "@/lib/exercise-data";
 
 interface CompletionProps {
   resetState: () => void;
-  exerciseTimes: number[];
+  totalTime: number;
   startTime: number | null;
 }
 
-export default function Completion({ resetState, exerciseTimes, startTime }: CompletionProps) {
-  // Calculate total time from individual exercise times
-  const totalExercisesTime = exerciseTimes.reduce((acc, time) => acc + time, 0);
-  
-  // Calculate total time from start to finish (if available)
-  const totalSessionTime = startTime 
-    ? Math.floor((Date.now() - startTime) / 1000)
-    : totalExercisesTime;
-    
-  // Use the total session time if available, otherwise use sum of exercise times
-  const totalTimeSeconds = totalSessionTime || totalExercisesTime;
+export default function Completion({ resetState, totalTime, startTime }: CompletionProps) {
+  // Use the provided total time or calculate it from start time if available
+  const totalTimeSeconds = totalTime || (startTime ? Math.floor((Date.now() - startTime) / 1000) : 0);
   
   // Format time helper function
   const formatTime = (seconds: number): string => {
@@ -82,10 +74,7 @@ export default function Completion({ resetState, exerciseTimes, startTime }: Com
                             {exercise.repetitions}x
                           </span>
                         )}
-                        <span className="bg-[#E8EAF6] text-[#3949AB] px-2 py-1 rounded-full text-xs">
-                          <span className="material-icons text-xs align-middle mr-1">schedule</span>
-                          {formatTime(exerciseTimes[index] || 0)}
-                        </span>
+
                       </div>
                     </div>
                   </li>
