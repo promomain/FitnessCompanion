@@ -73,21 +73,7 @@ export default function Completion({ resetState, totalTime, startTime }: Complet
                     <span className="material-icons text-[#4CAF50] mr-2 mt-0.5">check_circle</span>
                     <div>
                       <div className="font-medium">{exercise.title}</div>
-                      <div className="text-sm flex flex-wrap gap-2">
-                        {exercise.duration && (
-                          <span className="bg-[#E8F5E9] text-[#2E7D32] px-2 py-1 rounded-full text-xs">
-                            <span className="material-icons text-xs align-middle mr-1">timer</span>
-                            {exercise.duration}
-                          </span>
-                        )}
-                        {exercise.repetitions && (
-                          <span className="bg-[#FFF8E1] text-[#F57F17] px-2 py-1 rounded-full text-xs">
-                            <span className="material-icons text-xs align-middle mr-1">repeat</span>
-                            {exercise.repetitions}x
-                          </span>
-                        )}
-
-                      </div>
+                      {/* Eliminamos las etiquetas de duración y repeticiones para dar más espacio */}
                     </div>
                   </li>
                 ))}
