@@ -17,20 +17,23 @@ export interface ExerciseState {
 }
 
 function Router() {
+  // Inicializar estado con el tiempo actual para asegurar que siempre tengamos un tiempo de inicio
   const [state, setState] = useState<ExerciseState>({
     currentExercise: 0,
     exercisesCompleted: [false, false, false, false, false],
-    startTime: null,
+    startTime: Date.now(), // Inicializar tiempo de inicio al cargar la app
     totalTime: 0
   });
 
   const resetState = () => {
+    // Al reiniciar, establecemos un nuevo tiempo de inicio
     setState({
       currentExercise: 0,
       exercisesCompleted: [false, false, false, false, false],
-      startTime: null,
+      startTime: Date.now(), // Nuevo tiempo de inicio
       totalTime: 0
     });
+    console.log("Estado reiniciado con nuevo tiempo de inicio:", Date.now());
   };
 
   return (
