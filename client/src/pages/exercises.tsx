@@ -82,6 +82,19 @@ export default function Exercises({ state, setState }: ExercisesProps) {
     const allCompleted = state.exercisesCompleted.every(status => status);
     
     if (state.currentExercise === exercises.length - 1 && allCompleted) {
+      // Make sure we record time for the last exercise
+      const now = Date.now();
+      const newExerciseTimes = [...state.exerciseTimes];
+      const startTime = state.exerciseStartTimes[state.currentExercise] || now;
+      const timeSpent = Math.floor((now - startTime) / 1000);
+      newExerciseTimes[state.currentExercise] = timeSpent;
+      
+      // Update state with final times
+      setState({
+        ...state,
+        exerciseTimes: newExerciseTimes
+      });
+      
       // Complete the routine
       try {
         await apiRequest('POST', '/api/progress/complete', { completed: true });

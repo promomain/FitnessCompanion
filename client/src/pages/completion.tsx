@@ -1,12 +1,35 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { exercises } from "@/lib/exercise-data";
 
 interface CompletionProps {
   resetState: () => void;
+  exerciseTimes: number[];
+  startTime: number | null;
 }
 
-export default function Completion({ resetState }: CompletionProps) {
+export default function Completion({ resetState, exerciseTimes, startTime }: CompletionProps) {
+  // Calculate total time from individual exercise times
+  const totalExercisesTime = exerciseTimes.reduce((acc, time) => acc + time, 0);
+  
+  // Calculate total time from start to finish (if available)
+  const totalSessionTime = startTime 
+    ? Math.floor((Date.now() - startTime) / 1000)
+    : totalExercisesTime;
+    
+  // Use the total session time if available, otherwise use sum of exercise times
+  const totalTimeSeconds = totalSessionTime || totalExercisesTime;
+  
+  // Format time helper function
+  const formatTime = (seconds: number): string => {
+    if (seconds < 60) return `${seconds} segundos`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return remainingSeconds > 0 
+      ? `${minutes} minuto${minutes > 1 ? 's' : ''} y ${remainingSeconds} segundo${remainingSeconds > 1 ? 's' : ''}`
+      : `${minutes} minuto${minutes > 1 ? 's' : ''}`;
+  };
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
       {/* Header */}
@@ -31,27 +54,42 @@ export default function Completion({ resetState }: CompletionProps) {
             
             <div className="bg-gray-100 rounded-lg p-4 mb-6">
               <h3 className="text-xl font-bold mb-2">Resumen</h3>
-              <ul className="text-left space-y-2">
-                <li className="flex items-center">
-                  <span className="material-icons text-[#4CAF50] mr-2">check_circle</span>
-                  <span>Elíptica: 5 minutos</span>
-                </li>
-                <li className="flex items-center">
-                  <span className="material-icons text-[#4CAF50] mr-2">check_circle</span>
-                  <span>Caminata ida y vuelta: 10 repeticiones</span>
-                </li>
-                <li className="flex items-center">
-                  <span className="material-icons text-[#4CAF50] mr-2">check_circle</span>
-                  <span>Sentadillas: 10 repeticiones</span>
-                </li>
-                <li className="flex items-center">
-                  <span className="material-icons text-[#4CAF50] mr-2">check_circle</span>
-                  <span>Sentadilla + caminata: 5 repeticiones</span>
-                </li>
-                <li className="flex items-center">
-                  <span className="material-icons text-[#4CAF50] mr-2">check_circle</span>
-                  <span>Parado en un pie: 7 repeticiones por pierna</span>
-                </li>
+              
+              {/* Total time */}
+              <div className="mb-4 text-center py-2 bg-[#E3F2FD] rounded-lg border border-[#BBDEFB]">
+                <p className="font-bold text-[#1565C0]">
+                  <span className="material-icons align-middle mr-1">schedule</span>
+                  Tiempo total: {formatTime(totalTimeSeconds)}
+                </p>
+              </div>
+              
+              <ul className="text-left space-y-3">
+                {exercises.map((exercise, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="material-icons text-[#4CAF50] mr-2 mt-0.5">check_circle</span>
+                    <div>
+                      <div className="font-medium">{exercise.title}</div>
+                      <div className="text-sm flex flex-wrap gap-2">
+                        {exercise.duration && (
+                          <span className="bg-[#E8F5E9] text-[#2E7D32] px-2 py-1 rounded-full text-xs">
+                            <span className="material-icons text-xs align-middle mr-1">timer</span>
+                            {exercise.duration}
+                          </span>
+                        )}
+                        {exercise.repetitions && (
+                          <span className="bg-[#FFF8E1] text-[#F57F17] px-2 py-1 rounded-full text-xs">
+                            <span className="material-icons text-xs align-middle mr-1">repeat</span>
+                            {exercise.repetitions}x
+                          </span>
+                        )}
+                        <span className="bg-[#E8EAF6] text-[#3949AB] px-2 py-1 rounded-full text-xs">
+                          <span className="material-icons text-xs align-middle mr-1">schedule</span>
+                          {formatTime(exerciseTimes[index] || 0)}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
             

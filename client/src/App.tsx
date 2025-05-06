@@ -49,7 +49,7 @@ function Router() {
         {() => <Exercises state={state} setState={setState} />}
       </Route>
       <Route path="/completion">
-        {() => <Completion resetState={resetState} />}
+        {() => <Completion resetState={resetState} exerciseTimes={state.exerciseTimes} startTime={state.startTime} />}
       </Route>
       <Route component={NotFound} />
     </Switch>
