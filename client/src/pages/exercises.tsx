@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,8 @@ import { Counter } from "@/components/ui/counter";
 import { exercises } from "@/lib/exercise-data";
 import { apiRequest } from "@/lib/queryClient";
 import { ExerciseState } from "@/App";
+import { useSwipeable } from "react-swipeable";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
 
 interface ExercisesProps {
   state: ExerciseState;
@@ -15,6 +17,11 @@ interface ExercisesProps {
 
 export default function Exercises({ state, setState }: ExercisesProps) {
   const [, navigate] = useLocation();
+  const fullscreenHandle = useFullScreenHandle();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // State for fullscreen video mode
+  const [isVideoFullscreen, setIsVideoFullscreen] = useState(false);
   
   // Counters state for all exercises
   const [counters, setCounters] = useState({
@@ -28,6 +35,21 @@ export default function Exercises({ state, setState }: ExercisesProps) {
   // Update button states based on current exercise and progress
   const [completeButtonEnabled, setCompleteButtonEnabled] = useState(false);
   const [nextButtonEnabled, setNextButtonEnabled] = useState(false);
+  
+  // Set up swipe handlers for navigation between exercises
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (state.currentExercise < exercises.length - 1 && nextButtonEnabled) {
+        goToNextExercise();
+      }
+    },
+    onSwipedRight: () => {
+      if (state.currentExercise > 0) {
+        goToPreviousExercise();
+      }
+    },
+    trackMouse: true
+  });
 
   // Update exercise completion status
   const completeExercise = async () => {
@@ -153,10 +175,33 @@ export default function Exercises({ state, setState }: ExercisesProps) {
   // Get current exercise data
   const currentExercise = exercises[state.currentExercise];
 
+  // Toggle fullscreen mode for video
+  const toggleVideoFullscreen = () => {
+    setIsVideoFullscreen(!isVideoFullscreen);
+    
+    if (!isVideoFullscreen) {
+      fullscreenHandle.enter();
+      // Play video automatically when entering fullscreen
+      if (videoRef.current) {
+        videoRef.current.play();
+      }
+    } else {
+      fullscreenHandle.exit();
+    }
+  };
+  
+  useEffect(() => {
+    // Reset fullscreen state when changing exercises
+    if (isVideoFullscreen) {
+      fullscreenHandle.exit();
+      setIsVideoFullscreen(false);
+    }
+  }, [state.currentExercise, isVideoFullscreen, fullscreenHandle]);
+  
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-24">
+    <div className="min-h-screen bg-[#F5F7FA] pb-24" {...swipeHandlers}>
       {/* Header */}
-      <header className="sticky top-0 bg-white shadow-md z-10">
+      <header className={`sticky top-0 bg-white shadow-md z-10 ${isVideoFullscreen ? 'hidden' : ''}`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-[#2196F3]">Rutina de Ejercicios</h1>
           <div className="flex items-center">
@@ -165,8 +210,68 @@ export default function Exercises({ state, setState }: ExercisesProps) {
         </div>
       </header>
 
-      {/* Exercise Container */}
-      <div className="container mx-auto px-4 py-4">
+      {/* Fullscreen Video Mode */}
+      <FullScreen handle={fullscreenHandle}>
+        {isVideoFullscreen ? (
+          <div className="fullscreen-video-container">
+            <video 
+              ref={videoRef}
+              className="video-fullscreen"
+              controls
+              autoPlay
+              src={currentExercise.videoPath}
+            >
+              Tu navegador no soporta videos HTML5.
+            </video>
+            
+            {/* Exercise indicator */}
+            <div className="exercise-indicator">
+              {exercises.map((_, index) => (
+                <div 
+                  key={index} 
+                  className={`progress-dot ${state.currentExercise === index ? 'active' : ''}`}
+                ></div>
+              ))}
+            </div>
+            
+            {/* Swipe indicators */}
+            {state.currentExercise > 0 && (
+              <div className="swipe-indicator swipe-left">
+                <span className="material-icons text-white">arrow_back</span>
+              </div>
+            )}
+            
+            {state.currentExercise < exercises.length - 1 && nextButtonEnabled && (
+              <div className="swipe-indicator swipe-right">
+                <span className="material-icons text-white">arrow_forward</span>
+              </div>
+            )}
+            
+            {/* Control buttons */}
+            <div className="video-fullscreen-controls">
+              <Button
+                variant="outline"
+                className="bg-white"
+                onClick={toggleVideoFullscreen}
+              >
+                <span className="material-icons">fullscreen_exit</span>
+              </Button>
+              
+              <Button
+                className={`bg-[#4CAF50] text-white ${!completeButtonEnabled ? 'opacity-50' : ''}`}
+                onClick={completeExercise}
+                disabled={!completeButtonEnabled}
+              >
+                <span className="material-icons mr-2">check</span>
+                Completar
+              </Button>
+            </div>
+          </div>
+        ) : null}
+      </FullScreen>
+
+      {/* Exercise Container - Only shown when not in fullscreen */}
+      <div className={`container mx-auto px-4 py-4 ${isVideoFullscreen ? 'hidden' : ''}`}>
         {/* Progress Bar */}
         <div className="mb-4">
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -189,16 +294,28 @@ export default function Exercises({ state, setState }: ExercisesProps) {
         <Card className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
           <div className="relative">
             <video 
+              ref={videoRef}
               className="w-full max-h-[40vh] object-cover bg-black"
               controls
               poster={currentExercise.posterUrl}
               src={currentExercise.videoPath}
+              onClick={toggleVideoFullscreen}
             >
               Tu navegador no soporta videos HTML5.
             </video>
             <div className="absolute top-2 right-2 bg-[#2196F3] text-white rounded-full px-3 py-1 text-sm font-bold shadow-md">
               {currentExercise.id}/5
             </div>
+            
+            {/* Fullscreen button */}
+            <Button 
+              variant="ghost"
+              size="icon"
+              className="absolute bottom-2 right-2 bg-black/50 text-white hover:bg-black/70"
+              onClick={toggleVideoFullscreen}
+            >
+              <span className="material-icons">fullscreen</span>
+            </Button>
           </div>
           
           <CardContent className="p-5">
@@ -287,8 +404,8 @@ export default function Exercises({ state, setState }: ExercisesProps) {
         </Card>
       </div>
 
-      {/* Navigation Footer */}
-      <nav className="fixed bottom-0 left-0 w-full bg-white shadow-up px-4 py-3">
+      {/* Navigation Footer - Only shown when not in fullscreen */}
+      <nav className={`fixed bottom-0 left-0 w-full bg-white shadow-up px-4 py-3 ${isVideoFullscreen ? 'hidden' : ''}`}>
         <div className="flex justify-between">
           <Button
             className={`min-h-[56px] rounded-full bg-gray-200 text-[#333333] text-lg font-bold py-3 px-6 flex items-center justify-center ${state.currentExercise === 0 ? 'opacity-50' : ''}`}
