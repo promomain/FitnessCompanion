@@ -278,22 +278,24 @@ export default function Exercises({ state, setState }: ExercisesProps) {
 
       {/* Exercise Container - Compact vertical layout for iPhone */}
       <div className={`container mx-auto px-4 py-2 ${isVideoFullscreen ? 'hidden' : ''}`}>
-        {/* Progress Bar */}
-        <div className="mb-2">
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        {/* Exercise Progress Indicators */}
+        <div className="flex justify-between mb-4 px-1">
+          {exercises.map((_, index) => (
             <div 
-              id="progress-bar" 
-              className="h-full bg-[#4CAF50]" 
-              style={{ width: `${(state.currentExercise / (exercises.length - 1)) * 100}%` }}
-            ></div>
-          </div>
-          <div className="grid grid-cols-5 text-sm mt-1">
-            <span className="text-left">1</span>
-            <span className="text-center">2</span>
-            <span className="text-center">3</span>
-            <span className="text-center">4</span>
-            <span className="text-right">5</span>
-          </div>
+              key={index}
+              className={`
+                flex items-center justify-center 
+                w-10 h-10 rounded-full font-bold text-base
+                ${index === state.currentExercise 
+                  ? 'bg-[#2196F3] text-white' 
+                  : index < state.currentExercise 
+                    ? 'bg-[#E3F2FD] text-[#2196F3]' 
+                    : 'bg-gray-200 text-gray-600'}
+              `}
+            >
+              {index + 1}
+            </div>
+          ))}
         </div>
 
         {/* Current Exercise - Maximized video with vertical layout */}
