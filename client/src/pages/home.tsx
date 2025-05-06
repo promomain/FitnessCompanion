@@ -67,24 +67,7 @@ export default function Home() {
             </div>
           </CardContent>
         </Card>
-        
-        <Card className="bg-white rounded-xl shadow-md p-6">
-          <CardContent className="p-0">
-            <h3 className="text-xl font-bold mb-4">Estadísticas</h3>
-            <div className="flex justify-between mb-2">
-              <span className="text-lg">Días consecutivos:</span>
-              <span className="text-lg font-bold">
-                {isLoading ? "..." : data?.streak || 0}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-lg">Última rutina completada:</span>
-              <span className="text-lg font-bold">
-                {isLoading ? "..." : data?.lastCompleted || "Nunca"}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+
       </div>
     </div>
   );
